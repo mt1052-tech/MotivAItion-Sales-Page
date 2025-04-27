@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>50 KI-LIFEHACKS E-Book</title>
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; color: #111; }
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem; background-color: #fff; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+    .hero { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+    .hero img { max-width: 300px; height: auto; }
+    .hero-text { flex: 1; margin-left: 2rem; }
+    h1 { font-size: 2rem; color: #111; }
+    .cta { background-color: #d60000; color: white; padding: 0.8rem 1.5rem; border: none; font-size: 1rem; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+    section { margin-top: 2rem; }
+    h2 { color: #111; margin-bottom: 0.5rem; }
+    ul { padding-left: 1.2rem; }
+    li { margin-bottom: 0.5rem; }
+    .error-message { color: red; font-weight: bold; margin-top: 1rem; display: none; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="hero">
+    <img src="{{ url_for('static', filename='6cc4236a-69ff-4453-bbdf-ac8ca0c2b526.png') }}" alt="50 KI-LIFEHACKS Cover">
+    <div class="hero-text">
+      <h1>50 KI-LIFEHACKS FÜR MOTIVATION, PRODUKTIVITÄT UND ERFOLG</h1>
+      <p>Entdecke, wie du Künstliche Intelligenz einsetzen kannst, um effizienter zu arbeiten und motiviert zu bleiben.</p>
+      <button id="checkout-button" class="cta">JETZT KAUFEN</button>
+      <div id="error-message" class="error-message">Der Zahlungsserver ist momentan nicht erreichbar.</div>
+    </div>
+  </div>
+  <section>
+    <h2>Inhalt</h2>
+    <ul>
+      <li>50 praxisnahe Lifehacks, um KI zur Steigerung deiner Motivation und Produktivität zu nutzen</li>
+      <li>Strategien und Tools für schnelleres Erreichen deiner Ziele und nachhaltigen Erfolg</li>
+      <li>Optimierung deines täglichen Lebens und deiner Arbeit mit KI</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Warum dieses E-Book?</h2>
+    <ul>
+      <li>Lerne, wie du moderne Technologien für deine persönliche und berufliche Weiterentwicklung nutzen kannst</li>
+      <li>Perfekt für Unternehmer, Freelancer und alle, die ihre Effizienz maximieren möchten</li>
+      <li>Einfach umsetzbare Tipps und Methoden für sofortige Ergebnisse</li>
+    </ul>
+  </section>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const stripe = Stripe('pk_test_12345');
+    const button = document.getElementById("checkout-button");
+    const errorMessage = document.getElementById("error-message");
+    if (button) {
+      button.addEventListener("click", async function () {
+        try {
+          const response = await fetch("/create-checkout-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({})
+          });
+          if (!response.ok) { throw new Error("Server antwortete nicht korrekt"); }
+          const session = await response.json();
+          const result = await stripe.redirectToCheckout({ sessionId: session.id });
+          if (result.error) { alert(result.error.message); }
+        } catch (error) {
+          console.error("Fehler beim Starten der Zahlung:", error);
+          if (errorMessage) { errorMessage.style.display = 'block'; }
+        }
+      });
+    }
+  });
+</script>
+</body>
+</html>
